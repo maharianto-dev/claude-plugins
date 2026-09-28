@@ -1,6 +1,6 @@
 {
   "name": "save-plan",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "After a plan is approved, offer to save it to PLANS/<yyyymmdd-HHMMss>-<name>.md and hold off executing.",
   "author": {
     "name": "Aridya Maharianto",
