@@ -32,4 +32,4 @@ If there is no plan, say so. Don't create an empty file.
 # or: printf '%s\n' "<plan markdown>" | "${CLAUDE_PLUGIN_ROOT}/scripts/save-plan.sh" "<name>"
 ```
 
-The script picks the workspace root (the git root, otherwise the project dir). It adds a timestamp, never overwrites an existing file, makes sure the file is markdown, and prints the saved path. Tell the user that path in one line. Don't start executing the plan unless the user asks.
+The script uses the directory Claude was launched from (`CLAUDE_PROJECT_DIR`) as the workspace root, not the current shell directory. It adds a timestamp, never overwrites an existing file, makes sure the file is markdown, and prints the saved path. Tell the user that path in one line. Don't start executing the plan unless the user asks.

@@ -24,9 +24,9 @@ else
 fi
 [[ -n "${plan//[[:space:]]/}" ]] || die "plan is empty; nothing saved"
 
-# Use the git root as the workspace root, then the Claude project dir, then the current directory.
-root=$(git rev-parse --show-toplevel 2>/dev/null || true)
-root=${root:-${CLAUDE_PROJECT_DIR:-$PWD}}
+# The workspace root is the directory Claude was launched from (CLAUDE_PROJECT_DIR),
+# not the shell's current directory at runtime. Fall back to $PWD only if it is unset.
+root=${CLAUDE_PROJECT_DIR:-$PWD}
 dir="$root/PLANS"
 mkdir -p "$dir"
 

@@ -19,7 +19,7 @@ Rules:
 - Plan names are always lowercase kebab-case. A name like `My Cool Plan!` becomes `my-cool-plan`.
 - Saved files are always markdown, and the plan is written as-is. If the plan has no heading, one is added.
 - Existing files are never overwritten.
-- The workspace root is the git root if there is one, otherwise the project directory.
+- The workspace root is the directory Claude was launched from (`CLAUDE_PROJECT_DIR`), not the shell's current directory at runtime.
 
 You can also save a plan manually with `/save-plan:save-plan [name]`.
 
