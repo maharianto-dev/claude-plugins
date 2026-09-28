@@ -1,0 +1,16 @@
+{
+  "name": "maharianto-claude-plugins",
+  "owner": {
+    "name": "Aridya Maharianto",
+    "email": "aridya.maharianto.dev@gmail.com"
+  },
+  "description": "Claude Code plugins by Aridya Maharianto.",
+  "plugins": [
+    {
+      "name": "save-plan",
+      "source": "./save-plan",
+      "description": "After a plan is approved, offer to save it to PLANS/<yyyymmdd-HHMMss>-<name>.md and hold off executing.",
+      "version": "0.1.0"
+    }
+  ]
+}
