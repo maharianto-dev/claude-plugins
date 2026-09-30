@@ -19,7 +19,10 @@ Rules:
 - Plan names are always lowercase kebab-case. A name like `My Cool Plan!` becomes `my-cool-plan`.
 - Saved files are always markdown, and the plan is written as-is. If the plan has no heading, one is added.
 - Existing files are never overwritten.
-- The workspace root is the directory Claude was launched from (`CLAUDE_PROJECT_DIR`), not the shell's current directory at runtime.
+- The workspace root is always the directory Claude was launched from, never the shell's current directory. Claude's Bash tool doesn't get `CLAUDE_PROJECT_DIR`, so the hooks capture it instead:
+  - After plan approval, the root is written into the save command as `--root`.
+  - At session start, a hook records the root for the session, so a manual `/save-plan` finds it through `CLAUDE_CODE_SESSION_ID`.
+  - If the root can't be determined, the script fails. It never falls back to the current directory.
 
 You can also save a plan manually with `/save-plan:save-plan [name]`.
 
@@ -36,7 +39,9 @@ Requires `bash` and `jq`.
 
 | Path | Purpose |
 |---|---|
-| `hooks/hooks.json` | Runs the hook after `ExitPlanMode` is approved |
+| `hooks/hooks.json` | Records the workspace root at session start, and runs the hook after `ExitPlanMode` is approved |
+| `scripts/record-project-root.sh` | `SessionStart` hook that records `CLAUDE_PROJECT_DIR` for the session under `${XDG_STATE_HOME:-~/.local/state}/claude-save-plan/sessions/` |
+| `scripts/root-state.sh` | Shared helper that sets where the per-session roots are recorded |
 | `scripts/on-plan-approved.sh` | Stages the approved plan and tells Claude to ask about saving |
-| `scripts/save-plan.sh` | Converts the name to kebab-case, adds the timestamp, and writes the file without overwriting |
+| `scripts/save-plan.sh` | Resolves the workspace root (`--root`, then `CLAUDE_PROJECT_DIR`, then the recorded session root), converts the name to kebab-case, adds the timestamp, and writes the file without overwriting |
 | `skills/save-plan/SKILL.md` | The manual `/save-plan` command |

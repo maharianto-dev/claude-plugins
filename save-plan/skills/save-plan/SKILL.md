@@ -32,4 +32,4 @@ If there is no plan, say so. Don't create an empty file.
 # or: printf '%s\n' "<plan markdown>" | "${CLAUDE_PLUGIN_ROOT}/scripts/save-plan.sh" "<name>"
 ```
 
-The script uses the directory Claude was launched from (`CLAUDE_PROJECT_DIR`) as the workspace root, not the current shell directory. It adds a timestamp, never overwrites an existing file, makes sure the file is markdown, and prints the saved path. Tell the user that path in one line. Don't start executing the plan unless the user asks.
+The workspace root is always the directory Claude was launched from, never the shell's current directory, even if you have `cd`'d into a subfolder. The script finds it on its own from the root the plugin's SessionStart hook recorded for this session. Don't `cd` first, and don't pass `--root $PWD`. If the script fails because it can't determine the root, pass `--root <the primary working directory shown at session start>` as the first argument. It adds a timestamp, never overwrites an existing file, makes sure the file is markdown, and prints the saved path. Tell the user that path in one line. Don't start executing the plan unless the user asks.

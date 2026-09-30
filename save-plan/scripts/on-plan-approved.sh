@@ -24,6 +24,11 @@ printf '%s\n' "$plan" >"$staged"
 
 save_script="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}/scripts/save-plan.sh"
 
+# Pin the workspace root now. Hooks get CLAUDE_PROJECT_DIR (the launch directory), but Claude's Bash tool
+# does not, and its current directory may have drifted into a subfolder. So the root is baked into the command.
+[[ -n "${CLAUDE_PROJECT_DIR:-}" ]] || { echo "save-plan: CLAUDE_PROJECT_DIR is not set for the PostToolUse hook" >&2; exit 1; }
+root=$CLAUDE_PROJECT_DIR
+
 read -r -d '' context <<EOF || true
 [save-plan plugin] The user approved the plan. Before you do anything else (no edits, no commands), call AskUserQuestion once.
 - question: "Execute the plan now, or save it and stop here?"
@@ -35,8 +40,8 @@ Replace <auto-name> with a descriptive lowercase kebab-case slug of 2 to 5 words
 
 Then do one of these:
 - If the user picks the Save option, or types a name under Other, run:
-  "$save_script" "<name>" "$staged"
-  <name> is the auto name, or the text the user typed (the script converts it to kebab-case). Report the saved path in one line and END YOUR TURN. Do not execute the plan. The user will ask when they want it executed.
+  "$save_script" --root "$root" "<name>" "$staged"
+  <name> is the auto name, or the text the user typed (the script converts it to kebab-case). Run the command exactly as given, keeping --root: it is the workspace root no matter what the current directory is. Report the saved path in one line and END YOUR TURN. Do not execute the plan. The user will ask when they want it executed.
 - If the user picks "Execute now", do not save. Implement the plan as usual.
 EOF
 

@@ -1,12 +1,19 @@
 #!/usr/bin/env bash
-# Usage: save-plan.sh <name> [plan-file]
+# Usage: save-plan.sh [--root <workspace root>] <name> [plan-file]
 # Saves a plan to <workspace root>/PLANS/<yyyymmdd-HHMMss>-<kebab-name>.md and prints the path.
 # If plan-file is omitted, the plan markdown is read from stdin.
 set -euo pipefail
+source "$(dirname "$0")/root-state.sh"
 
 die() { echo "save-plan: $*" >&2; exit 1; }
 
-[[ $# -ge 1 ]] || die "usage: save-plan.sh <name> [plan-file]"
+root=
+if [[ ${1:-} == --root ]]; then
+  [[ $# -ge 2 ]] || die "--root needs a directory"
+  root=$2
+  shift 2
+fi
+[[ $# -ge 1 ]] || die "usage: save-plan.sh [--root <workspace root>] <name> [plan-file]"
 raw_name=$1
 plan_file=${2:-}
 
@@ -24,9 +31,19 @@ else
 fi
 [[ -n "${plan//[[:space:]]/}" ]] || die "plan is empty; nothing saved"
 
-# The workspace root is the directory Claude was launched from (CLAUDE_PROJECT_DIR),
-# not the shell's current directory at runtime. Fall back to $PWD only if it is unset.
-root=${CLAUDE_PROJECT_DIR:-$PWD}
+# The workspace root is the directory Claude was launched from, never the shell's current directory:
+# Claude's shell often cd's into subfolders, which would scatter PLANS/ directories around the project.
+# The root comes from, in order: --root, CLAUDE_PROJECT_DIR (set for hooks), or the root the SessionStart
+# hook recorded for CLAUDE_CODE_SESSION_ID (the Bash tool gets that ID). If none is available, fail.
+if [[ -z "$root" && -n "${CLAUDE_PROJECT_DIR:-}" ]]; then
+  root=$CLAUDE_PROJECT_DIR
+fi
+if [[ -z "$root" && -n "${CLAUDE_CODE_SESSION_ID:-}" ]]; then
+  record=$(root_record_path "$CLAUDE_CODE_SESSION_ID")
+  [[ -f "$record" ]] && root=$(<"$record")
+fi
+[[ -n "$root" ]] || die "cannot tell the workspace root (no --root, no CLAUDE_PROJECT_DIR, and no root recorded for this session); pass --root <dir where claude was launched>"
+[[ -d "$root" ]] || die "workspace root is not a directory: $root"
 dir="$root/PLANS"
 mkdir -p "$dir"
 
