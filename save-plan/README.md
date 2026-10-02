@@ -6,6 +6,8 @@ A Claude Code plugin that saves plans from plan mode to your project:
 <workspace root>/PLANS/<yyyymmdd-HHMMss>-<plan-name>.md
 ```
 
+![The save prompt Claude shows right after you approve a plan](docs/save-prompt.png)
+
 ## How it works
 
 1. Make a plan in plan mode and approve it.
@@ -62,3 +64,4 @@ Requires `bash` and `jq`. The save-without-approving mod needs a Claude Code bui
 | `scripts/on-plan-approved.sh` | Stages the approved plan and tells Claude to ask about saving |
 | `scripts/save-plan.sh` | Resolves the workspace root (`--root`, then `CLAUDE_PROJECT_DIR`, then the recorded session root), converts the name to kebab-case, adds the timestamp, and writes the file without overwriting |
 | `skills/save-plan/SKILL.md` | The manual `/save-plan` command |
+| `docs/save-prompt.png` | The screenshot above |
