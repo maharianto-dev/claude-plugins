@@ -2,8 +2,8 @@ import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
 import type { Usage } from '../types'
-import { colorFor } from './color'
-import { barText, resetText, tokenText } from './format'
+import { colorFor, YELLOW } from './color'
+import { barText, elapsedText, resetText, tokenText } from './format'
 
 const usage = atom({ plugin: 'token-visualizer', key: 'usage-v2' } as const, null)
 
@@ -12,6 +12,12 @@ const BAR_WIDTH = 12
 const RULE = '─'.repeat(500)
 
 export const register: Register = on => {
+  // Redraw the band each second so the session clock ticks.
+  on('session.start', async ($, e, next) => {
+    $.clock.every(1000, () => $.ui.invalidate('ui.render'))
+    return next(e)
+  })
+
   on('session.measure', async ($, e, next) => {
     const pick = (kind: string) => {
       const w = e.rateLimits.find(r => r.kind === kind)
@@ -34,6 +40,7 @@ export const register: Register = on => {
 
     const { Box, Text } = $.ui.resolve(e)
     const now = await $.clock.now()
+    const { startedAt } = await $.session.usage()
 
     const meter = (label: string, percent: number, detail: string, dim: boolean) => {
       const bar = barText(percent, BAR_WIDTH)
@@ -58,12 +65,18 @@ export const register: Register = on => {
     return (
       <Box flexDirection="column">
         <Text dimColor wrap="truncate-end">{RULE}</Text>
-        <Box flexDirection="row" gap={2}>
-          {meter('ctx ', u.contextPercent, `${tokenText(u.contextTokens)}/${tokenText(u.contextWindow)}`, false)}
-          {divider}
-          {limit('5h  ', u.fiveHour)}
-          {divider}
-          {limit('week', u.sevenDay)}
+        <Box flexDirection="row" justifyContent="space-between" gap={2} paddingRight={2}>
+          <Box flexDirection="row" gap={2}>
+            {meter('ctx ', u.contextPercent, `${tokenText(u.contextTokens)}/${tokenText(u.contextWindow)}`, false)}
+            {divider}
+            {limit('5h  ', u.fiveHour)}
+            {divider}
+            {limit('week', u.sevenDay)}
+          </Box>
+          <Text>
+            <Text dimColor>session </Text>
+            <Text color={YELLOW}>{elapsedText(now - startedAt)}</Text>
+          </Text>
         </Box>
       </Box>
     )
