@@ -91,3 +91,6 @@ ehthumbs.db
 Desktop.ini
 .directory
 .Trash-*
+
+# --- Saved plans (save-plan output, local only) ---
+PLANS/
