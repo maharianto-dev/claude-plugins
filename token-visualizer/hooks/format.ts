@@ -17,6 +17,9 @@ export const resetText = (resetsAt: string | undefined, now: number): string => 
   return `resets ${d > 0 ? at.toLocaleDateString(undefined, { weekday: 'short' }) + ' ' : ''}${clock} (in ${left})`
 }
 
+// One decimal, left-padded to 6 characters ('100.0%') so a ticking value never resizes its cell.
+export const percentText = (p: number): string => `${p.toFixed(1)}%`.padStart(6)
+
 export const tokenText = (n: number): string =>
   n >= 1_000_000 ? `${+(n / 1_000_000).toFixed(1)}M` : n >= 1000 ? `${Math.round(n / 1000)}k` : String(n)
 

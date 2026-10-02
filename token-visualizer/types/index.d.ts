@@ -26,6 +26,6 @@ export type Cache = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'token-visualizer': { 'usage-v2': Usage | null; 'cache-v1': Cache | null }
+    'token-visualizer': { 'cache-v1': Cache | null }
   }
 }

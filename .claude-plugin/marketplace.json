@@ -16,7 +16,7 @@
       "name": "token-visualizer",
       "source": "./token-visualizer",
       "description": "Band above the prompt: context window ring, 5h and weekly usage bars with reset times, cache TTL countdown and hit rate.",
-      "version": "0.2.0"
+      "version": "0.2.1"
     }
   ]
 }
