@@ -9,8 +9,8 @@
     {
       "name": "save-plan",
       "source": "./save-plan",
-      "description": "After a plan is approved, offer to save it to PLANS/<yyyymmdd-HHMMss>-<name>.md and hold off executing.",
-      "version": "0.1.2"
+      "description": "Save plan-mode plans to PLANS/<yyyymmdd-HHMMss>-<name>.md: on approval, or by typing a save request under \"No, keep planning\".",
+      "version": "0.2.0"
     },
     {
       "name": "token-visualizer",
