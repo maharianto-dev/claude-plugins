@@ -7,6 +7,8 @@ A [Claude Code](https://claude.com/claude-code) plugin marketplace by Aridya Mah
 | [`save-plan`](save-plan/README.md) | Saves plan-mode plans to `PLANS/<yyyymmdd-HHMMss>-<name>.md`, on approval or by typing a save request under "No, keep planning". |
 | [`token-visualizer`](token-visualizer/README.md) | Draws a band above the prompt with the context window, 5h and weekly usage, pace, cache TTL and hit rate. |
 
+![token-visualizer's band above the prompt](token-visualizer/docs/band.png)
+
 ## Install
 
 Add the marketplace, then install the plugins you want:

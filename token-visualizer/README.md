@@ -2,6 +2,8 @@
 
 A Claude Code mod that draws a band above the prompt, so you can see how much room and budget you have left without leaving the session.
 
+![The token-visualizer band above the prompt, after one reply](docs/band.png)
+
 The band is a 3 x 3 grid that redraws every second:
 
 | | Column 1 | Column 2 | Column 3 |
@@ -37,4 +39,5 @@ Needs a Claude Code build with mods (function hooks). The mod uses `tail` to rea
 | `hooks/pace.ts` | Ideal usage, over/under verdict and projection |
 | `hooks/cache.ts`, `transcript.ts` | Cache countdown and hit rate, and reading the TTL from the transcript |
 | `hooks/*.test.ts` | Tests, run with `claude plugin test token-visualizer` |
+| `docs/band.png` | The screenshot above |
 | `types/index.d.ts` | The mod's state contract |
