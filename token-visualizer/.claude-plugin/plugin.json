@@ -1,0 +1,1 @@
+{ "name": "token-visualizer", "version": "0.1.0", "description": "Band above the prompt: context window ring, 5h and weekly usage bars with reset times.", "types": "./types/index.d.ts" }

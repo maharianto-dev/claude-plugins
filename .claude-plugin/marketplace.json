@@ -11,6 +11,12 @@
       "source": "./save-plan",
       "description": "After a plan is approved, offer to save it to PLANS/<yyyymmdd-HHMMss>-<name>.md and hold off executing.",
       "version": "0.1.2"
+    },
+    {
+      "name": "token-visualizer",
+      "source": "./token-visualizer",
+      "description": "Band above the prompt: context window ring, 5h and weekly usage bars with reset times.",
+      "version": "0.1.0"
     }
   ]
 }
