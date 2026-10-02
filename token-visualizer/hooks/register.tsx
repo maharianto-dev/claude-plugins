@@ -1,18 +1,19 @@
 import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
-import type { Usage } from '../types'
-import { colorFor, YELLOW } from './color'
-import { barText, elapsedText, resetText, tokenText } from './format'
+import type { Cache, Usage } from '../types'
+import { Band } from './band'
+import { addCounts, ZERO } from './cache'
+import { bandCells } from './cells'
+import { tailArgv, ttlFromTranscript } from './transcript'
 
 const usage = atom({ plugin: 'token-visualizer', key: 'usage-v2' } as const, null)
+const cache = atom({ plugin: 'token-visualizer', key: 'cache-v1' } as const, null)
 
-const BAR_WIDTH = 12
-// Longer than any terminal; truncate-end cuts it at the screen edge.
-const RULE = '─'.repeat(500)
+const TRANSCRIPT_LAG_MS = 1500
 
 export const register: Register = on => {
-  // Redraw the band each second so the session clock ticks.
+  // Redraw the band each second so the session clock and the cache countdown tick.
   on('session.start', async ($, e, next) => {
     $.clock.every(1000, () => $.ui.invalidate('ui.render'))
     return next(e)
@@ -34,51 +35,43 @@ export const register: Register = on => {
     return next(e)
   })
 
+  // Each main-loop request refreshes the cache: it restarts the TTL and adds to the hit-rate sums.
+  on('turn.step', async function* ($, e, next) {
+    const result = yield* next(e)
+    if (e.agentId !== undefined || result.usage === null) return result
+    const now = await $.clock.now()
+    const last = {
+      input: result.usage.input_tokens,
+      output: result.usage.output_tokens,
+      cacheRead: result.usage.cache_read_input_tokens,
+      cacheCreation: result.usage.cache_creation_input_tokens,
+    }
+    await update($, cache, (c): Cache => ({
+      lastAt: now,
+      ttl: c?.ttl ?? null,
+      last,
+      total: addCounts(c?.total ?? ZERO, last),
+    }))
+    return result
+  })
+
+  // The TTL is only in the transcript's cache_creation breakdown; a pure cache hit leaves it as it was.
+  // The transcript lags the end of the turn, so until the first TTL is known the hook waits for the write.
+  on('classic.Stop', async ($, e, next) => {
+    if ((await read($, cache))?.ttl === null) await $.clock.sleep(TRANSCRIPT_LAG_MS, { signal: next.signal })
+    const ran = await $.process.run(tailArgv(e.transcript_path))
+    if (ran.exitCode !== 0) throw new Error(`tail exited ${ran.exitCode}: ${ran.stderr.trim()}`)
+    const ttl = ttlFromTranscript(ran.stdout)
+    if (ttl !== null) await update($, cache, c => (c === null ? c : { ...c, ttl }))
+    return next(e)
+  })
+
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     const u = await read($, usage)
     if (e.props.hasSurvey || u === null) return next(e)
 
-    const { Box, Text } = $.ui.resolve(e)
     const now = await $.clock.now()
     const { startedAt } = await $.session.usage()
-
-    const meter = (label: string, percent: number, detail: string, dim: boolean) => {
-      const bar = barText(percent, BAR_WIDTH)
-      const color = colorFor(percent)
-      return (
-        <Text>
-          <Text dimColor>{label} </Text>
-          <Text color={color}>{bar.on}</Text>
-          <Text dimColor>{bar.off}</Text>
-          <Text dimColor={dim}> {detail}</Text>
-          <Text color={color}> {Math.round(percent)}%</Text>
-        </Text>
-      )
-    }
-    const limit = (label: string, w: Usage['fiveHour']) =>
-      w === null
-        ? <Text dimColor>{label} n/a</Text>
-        : meter(label, w.percent, resetText(w.resetsAt, now), true)
-
-    const divider = <Text dimColor>│</Text>
-
-    return (
-      <Box flexDirection="column">
-        <Text dimColor wrap="truncate-end">{RULE}</Text>
-        <Box flexDirection="row" justifyContent="space-between" gap={2} paddingRight={2}>
-          <Box flexDirection="row" gap={2}>
-            {meter('ctx ', u.contextPercent, `${tokenText(u.contextTokens)}/${tokenText(u.contextWindow)}`, false)}
-            {divider}
-            {limit('5h  ', u.fiveHour)}
-            {divider}
-            {limit('week', u.sevenDay)}
-          </Box>
-          <Text>
-            <Text dimColor>session </Text>
-            <Text color={YELLOW}>{elapsedText(now - startedAt)}</Text>
-          </Text>
-        </Box>
-      </Box>
-    )
+    return Band($.ui.resolve(e), bandCells(u, await read($, cache), now, startedAt))
   })
 }
