@@ -1,7 +1,7 @@
 import type { Cache, Usage } from '../types'
 import { countdownText, hitPercent, remainingMs, remainingPercent } from './cache'
 import { meterColor, YELLOW } from './color'
-import { barText, elapsedText, percentText, resetText, tokenText } from './format'
+import { barText, clockText, elapsedText, percentText, resetText, tokenText } from './format'
 import type { Cell, Seg } from './layout'
 import { deltaVerdict, FIVE_HOUR_MS, paceOf, projectionColor, SEVEN_DAY_MS } from './pace'
 
@@ -62,7 +62,7 @@ const hitCell = (c: Cache | null): Cell =>
     ? [{ text: 'hit  –', dim: true }]
     : [label('hit'), ...rate(hitPercent(c.last)), { text: '  Σ ', dim: true }, ...rate(hitPercent(c.total))]
 
-// The band's 3 x 3 grid: context and limits, then pace under the limits, then cache, hit and session.
+// The band's 3 x 3 grid: context and limits, then pace under the limits, then cache, hit, and the clock and session.
 export const bandCells = (u: Usage, c: Cache | null, now: number, startedAt: number): Cell[][] => [
   [
     meter('ctx', u.contextPercent, `${tokenText(u.contextTokens)}/${tokenText(u.contextWindow)}`, false, meterColor(u.contextPercent, 'bad')),
@@ -73,6 +73,6 @@ export const bandCells = (u: Usage, c: Cache | null, now: number, startedAt: num
   [
     cacheCell(c, now),
     hitCell(c),
-    [{ text: 'session ', dim: true }, { text: elapsedText(now - startedAt), color: YELLOW }],
+    [{ text: `${clockText(now)}  ` }, { text: 'session ', dim: true }, { text: elapsedText(now - startedAt), color: YELLOW }],
   ],
 ]

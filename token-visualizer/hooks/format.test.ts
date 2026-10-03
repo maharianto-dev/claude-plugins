@@ -1,5 +1,5 @@
 import { test, expect } from 'claude-code/testing'
-import { barText, elapsedText, percentText, tokenText } from './format'
+import { barText, clockText, elapsedText, percentText, tokenText } from './format'
 
 test('bar fills proportionally', () => {
   expect(barText(50, 10)).toEqual({ on: '█████', off: '░░░░░' })
@@ -26,4 +26,10 @@ test('percent has one decimal and is padded to 6 characters', () => {
   expect(percentText(92.44)).toBe(' 92.4%')
   expect(percentText(88.06)).toBe(' 88.1%')
   expect(percentText(100)).toBe('100.0%')
+})
+
+test('the clock is the local day, date and 24-hour time, every part padded', () => {
+  expect(clockText(new Date(2026, 9, 3, 17, 5, 9).getTime())).toBe('Sat 03-10-2026 17:05:09')
+  expect(clockText(new Date(2027, 0, 4, 0, 0, 0).getTime())).toBe('Mon 04-01-2027 00:00:00')
+  expect(clockText(new Date(2026, 11, 31, 23, 59, 59).getTime())).toBe('Thu 31-12-2026 23:59:59')
 })

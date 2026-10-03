@@ -10,7 +10,7 @@ The band is a 3 x 3 grid that redraws every second:
 |---|---|---|---|
 | Row 1 | `ctx`: context window use, as tokens used/total | `5h`: five-hour usage limit, with its reset time | `week`: weekly usage limit, with its reset time |
 | Row 2 | | `pace` for the 5h limit | `pace` for the weekly limit |
-| Row 3 | `cache`: prompt cache TTL countdown | `hit`: cache hit rate for the last request, and `Σ` for the session | `session`: time since the session started |
+| Row 3 | `cache`: prompt cache TTL countdown | `hit`: cache hit rate for the last request, and `Σ` for the session | the local clock (`Sat 03-10-2026 17:05:09`, 24-hour, ticking each second), then `session`: time since the session started |
 
 - **Colors**: `ctx`, `5h` and `week` go from blue to yellow to red as they fill up. `cache` and `hit` go the other way: blue when high, red when low.
 - **pace** compares your usage with an even burn through the window. It shows the ideal usage right now, whether you're over or under it, and the usage you'll reach by the reset (`proj`) if you keep this rate. A projection above 100% is shown in red.

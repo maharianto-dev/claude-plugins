@@ -1,1 +1,1 @@
-{ "name": "token-visualizer", "version": "0.2.2", "description": "Band above the prompt: context window ring, 5h and weekly usage bars with reset times, cache TTL countdown and hit rate.", "types": "./types/index.d.ts" }
+{ "name": "token-visualizer", "version": "0.2.3", "description": "Band above the prompt: context window ring, 5h and weekly usage bars with reset times, cache TTL countdown and hit rate.", "types": "./types/index.d.ts" }

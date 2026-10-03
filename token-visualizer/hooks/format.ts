@@ -36,3 +36,13 @@ export const elapsedText = (ms: number): string => {
   if (m > 0) return `${pad(m)}m${pad(s)}s`
   return `${pad(s)}s`
 }
+
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+// Local wall clock, fixed width: `Sat 03-10-2026 17:05:09`, 24-hour, English day names whatever the locale.
+export const clockText = (ms: number): string => {
+  const t = new Date(ms)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const date = `${pad(t.getDate())}-${pad(t.getMonth() + 1)}-${t.getFullYear()}`
+  return `${DAYS[t.getDay()]} ${date} ${pad(t.getHours())}:${pad(t.getMinutes())}:${pad(t.getSeconds())}`
+}
