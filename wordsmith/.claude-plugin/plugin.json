@@ -1,0 +1,14 @@
+{
+  "name": "wordsmith",
+  "version": "0.1.2",
+  "description": "Turns a rough prompt into a concise, structured one: asks about every gap instead of assuming, then puts the result in the input box unsent.",
+  "author": {
+    "name": "Aridya Maharianto",
+    "email": "aridya.maharianto.dev@gmail.com"
+  },
+  "keywords": [
+    "prompt",
+    "prompt-engineering",
+    "interview"
+  ]
+}
