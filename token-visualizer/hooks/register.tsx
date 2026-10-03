@@ -55,6 +55,15 @@ export const register: Register = on => {
 
     const now = await $.clock.now()
     const session = await $.session.usage()
-    return Band($.ui.resolve(e), bandCells(usageFrom(session), await read($, cache), now, session.startedAt))
+    const parts = $.ui.resolve(e)
+    const { Box } = parts
+    const band = Band(parts, bandCells(usageFrom(session), await read($, cache), now, session.startedAt))
+    // Drawn below whatever runs after it in the band, so a band above it (paste-peek's tiles) stays visible.
+    return (
+      <Box flexDirection="column">
+        {await next(e)}
+        {band}
+      </Box>
+    )
   })
 }

@@ -19,7 +19,7 @@ const meter = (name: string, percent: number, detail: string, dimDetail: boolean
   label(name),
   ...bar(percent, color),
   { text: ` ${detail}`, dim: dimDetail },
-  { text: ` ${Math.round(percent)}%`, color },
+  { text: ` ${percentText(percent)}`, color },
 ]
 
 const limit = (name: string, w: Usage['fiveHour'], now: number): Cell =>

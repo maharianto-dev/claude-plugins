@@ -48,3 +48,14 @@ test('the pace row is empty under ctx and every row has a pace or placeholder pe
   const none = bandCells({ ...usage(0, 0), fiveHour: null }, null, now, now)
   expect(none[1]![1]).toEqual([{ text: 'pace –', dim: true }])
 })
+
+test('ctx, 5h and week percentages have one decimal and keep their width', () => {
+  const now = Date.parse('2026-10-03T13:00:00Z')
+  const text = (cell: readonly { text: string }[]) => cell.map(s => s.text).join('')
+  const rows = bandCells({ ...usage(24.46, 3), contextPercent: 40.04 }, null, now, now)
+  expect(text(rows[0]![0]!)).toMatch(/ 40\.0%$/)
+  expect(text(rows[0]![1]!)).toMatch(/ 24\.5%$/)
+  expect(text(rows[0]![2]!)).toMatch(/ {2}3\.0%$/)
+  const full = bandCells({ ...usage(100, 100), contextPercent: 100 }, null, now, now)
+  expect(cellWidth(full[0]![1]!)).toBe(cellWidth(rows[0]![1]!) + 0)
+})
