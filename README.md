@@ -6,6 +6,7 @@ A [Claude Code](https://claude.com/claude-code) plugin marketplace by Aridya Mah
 |---|---|
 | [`save-plan`](save-plan/README.md) | Saves plan-mode plans to `PLANS/<yyyymmdd-HHMMss>-<name>.md`, on approval or by typing a save request under "No, keep planning". |
 | [`token-visualizer`](token-visualizer/README.md) | Draws a band above the prompt with the context window, 5h and weekly usage, pace, cache TTL and hit rate. |
+| [`paste-peek`](paste-peek/README.md) | Draws tiles above the prompt for each pasted image, long text and file path in the draft. |
 
 `save-plan` asks whether to save or execute once you approve a plan:
 
@@ -15,6 +16,10 @@ A [Claude Code](https://claude.com/claude-code) plugin marketplace by Aridya Mah
 
 ![token-visualizer's band above the prompt](token-visualizer/docs/band.png)
 
+`paste-peek` shows a tile for each pasted image, long text and file path above the prompt:
+
+![paste-peek's tiles above the prompt](paste-peek/docs/tiles.png)
+
 ## Install
 
 Add the marketplace, then install the plugins you want:
@@ -23,6 +28,7 @@ Add the marketplace, then install the plugins you want:
 /plugin marketplace add maharianto-dev/claude-plugins
 /plugin install save-plan@maharianto-claude-plugins
 /plugin install token-visualizer@maharianto-claude-plugins
+/plugin install paste-peek@maharianto-claude-plugins
 ```
 
 To try one from a local checkout without installing it:
@@ -31,11 +37,11 @@ To try one from a local checkout without installing it:
 claude --plugin-dir ./token-visualizer
 ```
 
-Both plugins include a mod (function hooks), so they need a Claude Code build that supports mods. `save-plan` also needs `bash` and `jq`.
+All plugins include a mod (function hooks), so they need a Claude Code build that supports mods. `save-plan` also needs `bash` and `jq`.
 
 ## Development
 
-Run these from the repo root, with `<plugin>` being `save-plan` or `token-visualizer`:
+Run these from the repo root, with `<plugin>` being `save-plan`, `token-visualizer` or `paste-peek`:
 
 ```bash
 claude plugin validate <plugin>        # manifest and hooks module check

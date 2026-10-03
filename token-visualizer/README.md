@@ -15,6 +15,7 @@ The band is a 3 x 3 grid that redraws every second:
 - **Colors**: `ctx`, `5h` and `week` go from blue to yellow to red as they fill up. `cache` and `hit` go the other way: blue when high, red when low.
 - **pace** compares your usage with an even burn through the window. It shows the ideal usage right now, whether you're over or under it, and the usage you'll reach by the reset (`proj`) if you keep this rate. A projection above 100% is shown in red.
 - **cache** counts down the time left on the prompt cache. It restarts after each request and reads `cold` once it has expired. The TTL (5 minutes or 1 hour) is read from the transcript after the first turn.
+- The band draws itself below whatever else is in the band above the prompt, so [`paste-peek`](../paste-peek/README.md)'s tiles stay on top of it.
 - The limits show `n/a` when Claude Code has no data for them, and the band stays after `/clear`.
 
 ## Install

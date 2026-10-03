@@ -17,6 +17,12 @@
       "source": "./token-visualizer",
       "description": "Band above the prompt: context window ring, 5h and weekly usage bars with reset times, cache TTL countdown and hit rate.",
       "version": "0.2.2"
+    },
+    {
+      "name": "paste-peek",
+      "source": "./paste-peek",
+      "description": "Tiles above the prompt for each pasted image, long text and file path in the draft, stacked on top of token-visualizer's band.",
+      "version": "0.1.2"
     }
   ]
 }

@@ -1,0 +1,14 @@
+{
+  "name": "paste-peek",
+  "version": "0.1.2",
+  "description": "Tiles above the prompt for each pasted image, long text and file path in the draft, stacked on top of token-visualizer's band.",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "reservedRows": {
+      "type": "number",
+      "title": "Rows reserved for the band below",
+      "description": "Rows the band content under the tiles takes (token-visualizer's band is 4, and Claude's own status row under it 1). The tiles fit the rows left, so the stacked band doesn't scroll.",
+      "default": 5
+    }
+  }
+}
