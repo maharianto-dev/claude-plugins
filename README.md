@@ -7,6 +7,7 @@ A [Claude Code](https://claude.com/claude-code) plugin marketplace by Aridya Mah
 | [`save-plan`](save-plan/README.md) | Saves plan-mode plans to `PLANS/<yyyymmdd-HHMMss>-<name>.md`, on approval or by typing a save request under "No, keep planning". |
 | [`token-visualizer`](token-visualizer/README.md) | Draws a band above the prompt with the context window, 5h and weekly usage, pace, cache TTL and hit rate. |
 | [`paste-peek`](paste-peek/README.md) | Draws tiles above the prompt for each pasted image, long text and file path in the draft. |
+| [`wordsmith`](wordsmith/README.md) | Turns a rough prompt into a structured one, asking about every gap instead of assuming, and puts it in the input box unsent. |
 
 `save-plan` asks whether to save or execute once you approve a plan:
 
@@ -29,6 +30,7 @@ Add the marketplace, then install the plugins you want:
 /plugin install save-plan@maharianto-claude-plugins
 /plugin install token-visualizer@maharianto-claude-plugins
 /plugin install paste-peek@maharianto-claude-plugins
+/plugin install wordsmith@maharianto-claude-plugins
 ```
 
 To try one from a local checkout without installing it:
@@ -41,7 +43,7 @@ All plugins include a mod (function hooks), so they need a Claude Code build tha
 
 ## Development
 
-Run these from the repo root, with `<plugin>` being `save-plan`, `token-visualizer` or `paste-peek`:
+Run these from the repo root, with `<plugin>` being `save-plan`, `token-visualizer`, `paste-peek` or `wordsmith`:
 
 ```bash
 claude plugin validate <plugin>        # manifest and hooks module check

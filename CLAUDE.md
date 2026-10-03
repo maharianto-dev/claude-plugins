@@ -9,6 +9,7 @@ A Claude Code plugin marketplace (`.claude-plugin/marketplace.json`) with one fo
 - `save-plan/`: saves plan-mode plans to `<workspace root>/PLANS/<yyyymmdd-HHMMss>-<kebab-name>.md`. It has a skill, classic command hooks (bash), and a mod.
 - `token-visualizer/`: a mod only. It draws a band above the prompt with context and rate-limit meters.
 - `paste-peek/`: a mod only. It draws tiles above the prompt for pasted images, long text and file paths. It sits on top of token-visualizer's band.
+- `wordsmith/`: a mod only. It interviews the user to turn a rough prompt into a structured one, and puts the result in the input box unsent.
 
 A plugin's version is in two places, its own `.claude-plugin/plugin.json` and its entry in `marketplace.json`. Bump both together, and keep the descriptions in sync.
 
@@ -24,7 +25,7 @@ Mod rules that `claude plugin validate` enforces or that bit us:
 
 ## Commands
 
-Run from the repo root, with `<plugin>` being `save-plan`, `token-visualizer` or `paste-peek`:
+Run from the repo root, with `<plugin>` being `save-plan`, `token-visualizer`, `paste-peek` or `wordsmith`:
 
 ```bash
 claude plugin validate <plugin>        # manifest + hooks module check: what it hooks and calls, what the engine would refuse
@@ -66,3 +67,11 @@ tmux capture-pane -p -t e2e        # read the screen; tmux send-keys -t e2e ... 
 - **File paths**: a `prompt.edit` hook calls `next(e)` first, then in the background checks whether the inserted text is one absolute or `~` path to a regular, non-image file. It keeps the path and the head of the file (`head -c`, `preview.ts`) in `$.state`. The item stays while that text is in the draft.
 - **Height**: tiles fit `maxRows − reservedRows` (`userConfig.reservedRows`, default 5: token-visualizer's band is a rule plus 3 rows, and the engine's own status row sits under it) by `bodyColumns`, shrinking together (`layout.ts`). The mod can't measure what is below it.
 - Every `$` call is in `register.tsx` (helpers that take `$` are declared at the top of that file); `tokens`, `paths`, `preview`, `png`, `images`, `items` and `layout` are pure.
+
+## wordsmith architecture
+
+- **Entry points**: `/wordsmith <prompt>` (`command.run`, registered from `session.start`), or a composer prompt with a `wordsmith`/`ws` token, or a third name matched only by digest (`seal.ts`, salted and repeated SHA-256). That name is never written in plain text anywhere in the repo. `trigger.ts` replaces it with `wordsmith` before the Haiku check sees the text. A trigger prompt returns `{ drop }`. A failed check sends the prompt on unchanged.
+- **Interview**: it runs in the background from `register.ts` (`interview`), and `flow.ts` decides each step from the parsed draft (`draft.ts`): context first (an Explore spawn), then questions (`$.ui.ask`, one at a time, at most `MAX_QUESTIONS` = 5 per interview, cut in `nextStep` when a draft asks past it), then a shorten redraft past 300 words, and fail after 6 drafts. Each draft is a fresh call that carries the whole history (`rules.ts`). The result goes in with `$.prompt.fill({ mode: 'replace' })`.
+- **Drafter**: `<root>/.claude/agents/wordsmith.md`, then `~/.claude/agents/wordsmith.md`, is spawned with the rules in its task. Without one, `$.model.complete` uses the session model and the main loop's last effort, taken from `turn.step`.
+- **Subagents**: `$.agent.spawn` resolves on start, and the answer is that agent's `turn.complete`, keyed by `agentId` (`ctx.waiting`; an end before the id is known goes to `ctx.early`). Plugins can't raise the Agent tool through `$.tool.call`. The finished agent's report also reaches the main loop as a `peer` prompt `<agent-message from="<agentId>">`, which `prompt.submit` drops for ids Wordsmith spawned.
+- **Tests**: the test kit strips `agentId` from a test's `agent.spawn` answer, so engine tests only check spawn requests. Answer delivery is covered by the manual E2E.
