@@ -5,6 +5,9 @@ import type { Cache } from '../types'
 import { Band } from './band'
 import { addCounts, ZERO } from './cache'
 import { bandCells } from './cells'
+import { DesktopBand } from './desktop'
+import { desktopMetrics, footerSegs } from './metrics'
+import { tierOf } from './tier'
 import { tailArgv, ttlFromTranscript } from './transcript'
 import { usageFrom } from './usage'
 
@@ -55,10 +58,23 @@ export const register: Register = on => {
 
     const now = await $.clock.now()
     const session = await $.session.usage()
+    const cacheState = await read($, cache)
+    // Drawn below whatever runs after it in the band, so a band above it (paste-peek's tiles) stays visible.
+    if (e.surface === 'desktop') {
+      const parts = $.ui.resolve(e)
+      const { Box } = parts
+      const tier = tierOf(e.props.bodyColumns)
+      const band = DesktopBand(parts, desktopMetrics(usageFrom(session), cacheState, now), footerSegs(now, session.startedAt), tier, e.props.bodyColumns)
+      return (
+        <Box flexDirection="column">
+          {await next(e)}
+          {band}
+        </Box>
+      )
+    }
     const parts = $.ui.resolve(e)
     const { Box } = parts
-    const band = Band(parts, bandCells(usageFrom(session), await read($, cache), now, session.startedAt))
-    // Drawn below whatever runs after it in the band, so a band above it (paste-peek's tiles) stays visible.
+    const band = Band(parts, bandCells(usageFrom(session), cacheState, now, session.startedAt))
     return (
       <Box flexDirection="column">
         {await next(e)}

@@ -18,6 +18,16 @@ The band is a 3 x 3 grid that redraws every second:
 - The band draws itself below whatever else is in the band above the prompt, so [`paste-peek`](../paste-peek/README.md)'s tiles stay on top of it.
 - The limits show `n/a` when Claude Code has no data for them, and the band stays after `/clear`.
 
+## Claude desktop
+
+The desktop app gets its own look: cards with a label, a value, a detail and a thin rounded line (an SVG, sized from the band's width). The layout follows the band's width:
+
+| Width (cells) | Cards per row | Shown |
+|---|---|---|
+| under 64 (narrow) | 1 | line and value |
+| 64 to 103 (medium) | 2 | adds reset time, cache TTL, `Σ` hit rate, clock and session |
+| 104 and up (wide) | 3 | adds the `pace` line under `5h` and `week` |
+
 ## Install
 
 ```
@@ -33,7 +43,8 @@ Needs a Claude Code build with mods (function hooks). The mod uses `tail` to rea
 |---|---|
 | `hooks/hooks.json` | Loads the mod |
 | `hooks/register.tsx` | The mod: ticks the clock, tracks cache use, reads the TTL, and renders the band |
-| `hooks/band.tsx` | Lays the cells out as aligned columns |
+| `hooks/band.tsx` | Lays the cells out as aligned columns (terminal) |
+| `hooks/desktop.tsx`, `metrics.ts`, `tier.ts` | The desktop band: cards, their data, and the narrow/medium/wide tiers |
 | `hooks/cells.ts` | Builds each cell of the grid |
 | `hooks/layout.ts`, `format.ts`, `color.ts` | Column widths, number and time text, meter colors |
 | `hooks/usage.ts` | Turns the session's usage into the percentages the band shows |
